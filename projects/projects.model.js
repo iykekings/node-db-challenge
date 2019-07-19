@@ -3,7 +3,19 @@ const config = require('../knexfile').development;
 
 const db = knex(config);
 
-const getProjects = () => db('projects');
+const getProjects = id =>
+  !id
+    ? db('projects')
+    : db('projects')
+        .where({ id })
+        .first();
+
+const getActions = id =>
+  !id
+    ? db('actions')
+    : db('actions')
+        .where({ id })
+        .first();
 
 const getProjectById = async id => {
   const project = await db('projects')
@@ -13,13 +25,20 @@ const getProjectById = async id => {
   return { ...project, actions };
 };
 
-const createProject = project => db('projects').insert(project);
+const createProject = project =>
+  db('projects')
+    .insert(project)
+    .then(([id]) => getProjects(id));
 
-const createAction = actions => db('actions').insert(actions);
+const createAction = actions =>
+  db('actions')
+    .insert(actions)
+    .then(([id]) => getActions(id));
 
 module.exports = {
   getProjectById,
   getProjects,
   createAction,
-  createProject
+  createProject,
+  getActions
 };
