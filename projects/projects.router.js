@@ -1,5 +1,10 @@
 const router = require('express').Router();
-const { getProjects, getProjectById } = require('./projects.model');
+const {
+  getProjects,
+  getProjectById,
+  createAction,
+  createProject
+} = require('./projects.model');
 
 router.get('/', async (req, res) => {
   try {
@@ -22,6 +27,32 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.post('/', validateProjectBody, async (req, res) => {
+  try {
+    const newProject = await createProject(req.body);
+    res.status(201).json(newProject);
+  } catch (error) {
+    res.status(500).json({ message: 'Could not add the project' });
+  }
+});
+
+router.post(
+  '/projects/:id/actions',
+  validateProjectId,
+  validateActionBody,
+  async (req, res) => {
+    try {
+      const newAction = await createAction({
+        ...req.body,
+        project_id: req.params.id
+      });
+      res.status(201).json(newAction);
+    } catch (error) {
+      res.status(500).json({ message: 'Could not add the action' });
+    }
+  }
+);
+
 // middlewares
 const validateProjectId = async (req, res, next) => {
   try {
@@ -35,6 +66,26 @@ const validateProjectId = async (req, res, next) => {
   } catch (error) {
     res.status(500).json({ message: 'Could not validate the Id' });
   }
+};
+
+const validateProjectBody = (req, res, next) => {
+  const { name, description } = req.body;
+  if (name && description) {
+    next();
+  }
+  res
+    .status(400)
+    .json({ message: 'Please provide name and description for the project' });
+};
+
+const validateActionBody = (req, res, next) => {
+  const { notes, description } = req.body;
+  if (notes && description) {
+    next();
+  }
+  res
+    .status(400)
+    .json({ message: 'Please provide notes and description for the action' });
 };
 
 module.exports = router;
