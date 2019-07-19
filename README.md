@@ -46,7 +46,7 @@ Demonstrate your understanding of this week's concepts by answering the followin
 
 1. What do we need in order to have a _many to many_ relationship between two tables.
 
-   > We need multi-table querying method which is JOIN command in SQL. Then we can store ids of two related in a separate table as foreign keys. We can then query that database and use `join` to query the two tables.
+   > We need an intermediary table. Then we can store ids of two related tables in a that table as foreign keys. We can then query that database and use `join` to query the two tables.
 
 ## Project Set Up
 
